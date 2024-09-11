@@ -1,0 +1,37 @@
+version: '3'
+services:
+  node-server: #service name
+    container_name: node
+    build: . #คำแหน่ง dockerfile
+    ports:
+      - "8000:8000" #map port ภายในสู่ภายนอก
+    depends_on:
+      - db
+  #DB Setting
+  db:
+    image: mysql:latest
+    container_name: db
+    environment:
+      MYSQL_ROOT_PASSWORD: root # กำหนด user ของ root mysql
+      MYSQL_DATABASE: tutorial # กำหนด database เริ่มต้นของ mysql
+    ports:
+      - "3307:3306" # Change the host port to 3307
+    volumes:
+      - mysql_data_test:/var/lib/mysql
+  
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    container_name: phpmyadmin
+    platform: linux/amd64 # Specify the platform
+    environment:
+      PMA_HOST: db
+      PMA_PORT: 3306 # The port remains 3306 for the container as it maps to db's 3306
+      PMA_USER: root
+      PMA_PASSWORD: root
+    ports:
+      - "8080:80"
+    depends_on:
+      - db
+volumes:
+  mysql_data_test: #กำหนดชื่อ volume เช่น mysql_data_test
+    driver: local #ใช้แค่ในเครื่องปัจจุบัน
